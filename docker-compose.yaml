@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    networks:
+      - web_network
+
+networks:
+  web_network:
+    driver: bridge

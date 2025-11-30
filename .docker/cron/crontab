@@ -1,0 +1,2 @@
+# Run artisan scheduler
+* * * * * root sh /usr/local/bin/cron_script.sh >> /var/log/cron.log 2>&1
