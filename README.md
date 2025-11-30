@@ -16,7 +16,7 @@ docker run -d -p 8000:8000 --name swstarter-web lawnstarter/swstarter:latest
 Or with Docker Compose
 
 ```shell
-docker-compose up
+docker-compose up --build
 ``` 
 
 ## API Endpoints
