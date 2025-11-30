@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Log;
  */
 class SwApiService
 {
-    const SWAPI_ENDPOINT = 'https://www.swapi.tech/api/';
+    const SWAPI_ROOT_ENDPOINT = 'https://www.swapi.tech';
+    const SWAPI_ENDPOINT = self::SWAPI_ROOT_ENDPOINT . '/api/';
+
 
     const SWAPI_RESOURCE_PEOPLE = 'people';
     const SWAPI_RESOURCE_FILMS = 'films';
@@ -73,7 +75,7 @@ class SwApiService
             throw new SwApiRequestException('error fetching film by id from swapi.tech');
         }
 
-        return ['uid' => $id, ...$response->json('result.properties', [])];
+        return ['uid' => $id, ...$this->cleanupProperties($response->json('result.properties', []))];
     }
 
     /**
@@ -120,7 +122,7 @@ class SwApiService
             throw new SwApiRequestException('error fetching person by id from swapi.tech');
         }
 
-        return ['uid' => $id, ...$response->json('result.properties', [])];
+        return ['uid' => $id, ...$this->cleanupProperties($response->json('result.properties', []))];
     }
 
     /**
@@ -134,10 +136,29 @@ class SwApiService
         foreach ($result as $item) {
             // Here the xDto::FIELD_UID is not used because the result from swapi could not match our DTO model
             $uid = ArrayUtils::keyExists('uid', $item, "");
-            $properties = ArrayUtils::keyExists('properties', $item, []); // reading properties from swapi response data
+            $properties = $this->cleanupProperties(ArrayUtils::keyExists('properties', $item, [])); // reading properties from swapi response data
             $toReturn[] = ['uid' => $uid, ...$properties];
         }
 
         return $toReturn;
+    }
+
+    private function cleanupProperties(array $properties): array {
+
+        foreach ($properties as $property => $value) {
+            if ($property === 'films' || $property === 'characters') {
+                $properties[$property] = $this->removeSWEndpointFromList($value);
+            }
+        }
+
+        return $properties;
+    }
+
+    private function removeSWEndpointFromList(array $list): array {
+        $curatedList = [];
+        foreach ($list as $item) {
+           $curatedList[] = str_replace(self::SWAPI_ROOT_ENDPOINT, '', $item );
+        }
+        return $curatedList;
     }
 }

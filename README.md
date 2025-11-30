@@ -19,7 +19,34 @@ Or with Docker Compose
 docker-compose up
 ``` 
 
-## Stats endpoint
+## API Endpoints
+
+### Films endpoints
+
+Fetch Star Wars movies by title
+```shell
+curl --location 'http://localhost:8000/api/films?title=hope'
+```
+
+Fetch Star Wars movie by id:
+```shell
+curl --location 'http://localhost:8000/api/films/1'
+```
+
+### People endpoints
+
+Fetch Star Wars people by name
+```shell
+curl --location 'http://localhost:8000/api/people?name=yoda'
+```
+
+Fetch Star Wars people by id:
+```shell
+curl --location 'http://localhost:8000/api/people/22'
+```
+
+
+### Stats endpoint
 
 Once that the service is up and running the stats endpoint can be called following the next curl command:
 ```shell

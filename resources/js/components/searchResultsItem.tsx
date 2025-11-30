@@ -1,5 +1,6 @@
 import { Film } from '@/services/films';
 import { Person } from '@/services/people';
+import { Link } from '@inertiajs/react';
 
 interface SearchResultsItemPropsFilm {
     item: Film;
@@ -32,6 +33,11 @@ export default function SearchResultsItem({ item }: SearchProps) {
                 <button type="button" className="btn btn-success" onClick={() => onClick(item)}>
                     SEE DETAILS
                 </button>
+
+                {/*This one implements the Link to navigate to the people description screen*/}
+                {/*<Link type="button" href={`/${isFilm(item) ? 'films' : 'people'}/${item.uid}`} className="btn btn-success" >*/}
+                {/*    SEE DETAILS*/}
+                {/*</Link>*/}
             </div>
         </div>
     );

@@ -18,6 +18,7 @@ class PersonDto extends AbstractDto
     public const FIELD_EYE_COLOR = 'eye_color';
     public const FIELD_MASS = 'mass';
     public const FIELD_BIRTH_YEAR = 'birth_year';
+    public const FIELD_FILMS = 'films';
 
     /**
      * @var string
@@ -64,6 +65,11 @@ class PersonDto extends AbstractDto
      */
     private string $birthYear;
 
+    /**
+     * @var array
+     */
+    private array $films;
+
     private function __construct() {
         /*
             force developers to build object instance from its builder methods:
@@ -83,9 +89,10 @@ class PersonDto extends AbstractDto
      * @param $eyeColor
      * @param $mass
      * @param $birthYear
+     * @param $films
      * @return PersonDto
      */
-    public static function make($uid, $name, $gender, $skinColor, $hairColor, $height, $eyeColor, $mass, $birthYear): PersonDto {
+    public static function make($uid, $name, $gender, $skinColor, $hairColor, $height, $eyeColor, $mass, $birthYear, $films): PersonDto {
         $instance = new self();
 
         $instance->uid = $uid;
@@ -97,6 +104,7 @@ class PersonDto extends AbstractDto
         $instance->eyeColor = $eyeColor;
         $instance->mass = $mass;
         $instance->birthYear = $birthYear;
+        $instance->films = $films;
 
         return $instance;
     }
@@ -121,6 +129,7 @@ class PersonDto extends AbstractDto
         $eyeColor = ArrayUtils::keyExists(self::FIELD_EYE_COLOR, $data, self::UNKNOWN );
         $mass = ArrayUtils::keyExists(self::FIELD_MASS, $data, self::UNKNOWN );
         $birthYear = ArrayUtils::keyExists(self::FIELD_BIRTH_YEAR, $data, self::UNKNOWN );
+        $films = ArrayUtils::keyExists(self::FIELD_FILMS, $data, self::UNKNOWN );
 
         return self::make(
             $uid,
@@ -131,7 +140,8 @@ class PersonDto extends AbstractDto
             $height,
             $eyeColor,
             $mass,
-            $birthYear
+            $birthYear,
+            $films
         );
     }
 
@@ -150,7 +160,8 @@ class PersonDto extends AbstractDto
             self::FIELD_HEIGHT => $this->height,
             self::FIELD_EYE_COLOR => $this->eyeColor,
             self::FIELD_MASS => $this->mass,
-            self::FIELD_BIRTH_YEAR => $this->birthYear
+            self::FIELD_BIRTH_YEAR => $this->birthYear,
+            self::FIELD_FILMS => $this->films,
         ];
     }
 
@@ -223,5 +234,12 @@ class PersonDto extends AbstractDto
     public function getBirthYear(): string
     {
         return $this->birthYear;
+    }
+
+    /**
+     * @return array the person films list
+     */
+    public function getFilms(): array {
+        return $this->films;
     }
 }

@@ -17,6 +17,7 @@ class FilmDto extends AbstractDto
     public const FIELD_RELEASE_DATE = 'release_date';
     public const FIELD_OPENING_CRAWL = 'opening_crawl';
     public const FIELD_EPISODE_ID = 'episode_id';
+    public const FIELD_CHARACTERS = 'characters';
 
     /**
      * @var string
@@ -53,6 +54,11 @@ class FilmDto extends AbstractDto
      */
     private string $openingCrawl;
 
+    /**
+     * @var array
+     */
+    private array $characters;
+
     private function __construct() {
         /*
             force developers to build object instance from its builder methods:
@@ -72,7 +78,7 @@ class FilmDto extends AbstractDto
      * @param $openingCrawl
      * @return FilmDto
      */
-    public static function make($uid, $episodeId, $producer, $title, $director, $releaseDate, $openingCrawl): FilmDto
+    public static function make($uid, $episodeId, $producer, $title, $director, $releaseDate, $openingCrawl, $characters): FilmDto
     {
         $instance = new self();
         $instance->uid = $uid;
@@ -82,6 +88,7 @@ class FilmDto extends AbstractDto
         $instance->releaseDate = $releaseDate;
         $instance->openingCrawl = $openingCrawl;
         $instance->episodeId = $episodeId;
+        $instance->characters = $characters;
         return $instance;
     }
 
@@ -103,6 +110,7 @@ class FilmDto extends AbstractDto
         $director = ArrayUtils::keyExists(self::FIELD_DIRECTOR, $data, self::UNKNOWN );
         $releaseDate = ArrayUtils::keyExists(self::FIELD_RELEASE_DATE, $data, self::UNKNOWN );
         $openingCrawl = ArrayUtils::keyExists(self::FIELD_OPENING_CRAWL, $data, self::UNKNOWN );
+        $characters = ArrayUtils::keyExists(self::FIELD_CHARACTERS, $data, self::UNKNOWN );
 
         return self::make(
             $uid,
@@ -111,7 +119,8 @@ class FilmDto extends AbstractDto
             $title,
             $director,
             $releaseDate,
-            $openingCrawl
+            $openingCrawl,
+            $characters
         );
     }
 
@@ -129,6 +138,7 @@ class FilmDto extends AbstractDto
             self::FIELD_RELEASE_DATE => $this->releaseDate,
             self::FIELD_OPENING_CRAWL => $this->openingCrawl,
             self::FIELD_EPISODE_ID => $this->episodeId,
+            self::FIELD_CHARACTERS => $this->characters,
         ];
     }
 
