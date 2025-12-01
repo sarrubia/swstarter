@@ -1,7 +1,7 @@
 FROM php:8.4.14-fpm
 
 # installing dependencies
-RUN apt-get update -y && apt-get install -y openssl zip unzip git cron nano
+RUN apt-get update -y && apt-get install -y openssl zip unzip git cron nano nodejs npm
 
 # installing composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -11,9 +11,18 @@ WORKDIR /app
 
 # copying the full project (this is not ideally for prod env but for dev env works)
 COPY . /app
+RUN cp .env.example .env
 
 # installing composer dependencies
 RUN composer install
+
+# Laravel setting up
+RUN php artisan key:generate
+RUN php artisan migrate
+
+# Installing node dependencies and building frontend
+RUN npm install
+RUN npm run build
 
 # Copying cron script and adding execution permissions
 COPY ./.docker/cron/cron_script.sh /usr/local/bin/cron_script.sh
