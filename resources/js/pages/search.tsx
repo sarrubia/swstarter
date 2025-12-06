@@ -3,6 +3,7 @@ import SearchResults from '@/components/searchResults';
 import { Film, FilmsService } from '@/services/films';
 import { PeopleService, Person } from '@/services/people';
 import { useState } from 'react';
+import Layout from '@/components/layout';
 
 export default function Search() {
     const [data, setData] = useState({});
@@ -49,20 +50,15 @@ export default function Search() {
     };
 
     return (
-        <div>
-            <nav className="navbar bg-body-tertiary navbar-swstarter">
-                <div className="container-fluid">
-                    <span className="navbar-brand h1 mb-0">SWStarter</span>
-                </div>
-            </nav>
-            <div className="search-container container text-center">
+        <Layout
+            mainContent={
                 <div className="row align-items-start">
                     <div className="col-4">
                         <SearchBox onClick={fetchData} isLoading={loading} />
                     </div>
-                    <div className="col-8">{data && <SearchResults data={data} isLoading={loading} error={error} />}</div>
+                    {data && <div className="col-8"><SearchResults data={data} isLoading={loading} error={error} /></div>}
                 </div>
-            </div>
-        </div>
+            }
+        />
     );
 }

@@ -4,10 +4,12 @@ import { Link } from '@inertiajs/react';
 
 interface SearchResultsItemPropsFilm {
     item: Film;
+    setDetails;
 }
 
 interface SearchResultsItemPropsPeople {
     item: Person;
+    setDetails;
 }
 
 type SearchProps = SearchResultsItemPropsFilm | SearchResultsItemPropsPeople;
@@ -35,9 +37,9 @@ export default function SearchResultsItem({ item }: SearchProps) {
                 </button>
 
                 {/*This one implements the Link to navigate to the people description screen*/}
-                {/*<Link type="button" href={`/${isFilm(item) ? 'films' : 'people'}/${item.uid}`} className="btn btn-success" >*/}
-                {/*    SEE DETAILS*/}
-                {/*</Link>*/}
+                <Link type="button" href={`/${isFilm(item) ? 'films' : 'people'}/${item.uid}`} className="btn btn-success" >
+                    SEE DETAILS Link
+                </Link>
             </div>
         </div>
     );

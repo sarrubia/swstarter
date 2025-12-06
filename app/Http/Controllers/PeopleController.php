@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Dtos\PersonDto;
-use App\Lib\Utils\ArrayUtils;
 use App\Services\SwApi\Exceptions\SwApiRequestException;
 use App\Services\SwApi\SwApiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 

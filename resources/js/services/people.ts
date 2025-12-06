@@ -1,6 +1,7 @@
 import App from '@/actions/App';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
+import { getById } from '@/actions/App/Http/Controllers/PeopleController';
 
 export interface Person {
     uid: string;
@@ -31,6 +32,16 @@ export class PeopleService {
             return response.data;
         } catch (error) {
             console.error('Error fetching people:', error);
+            throw error;
+        }
+    }
+
+    public async getPeopleById(id: string): Promise<Person> {
+        try {
+            const response: AxiosResponse<Person> = await this.api.get(App.Http.Controllers.PeopleController.getById(id).url);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching person:', error);
             throw error;
         }
     }

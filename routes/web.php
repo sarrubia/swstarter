@@ -8,6 +8,9 @@ Route::get('/', function () {
 })->name('home');
 
 // route to people screen details
-//Route::get('/people/{id}', function () {
-//    return Inertia::render('people');
-//})->name('people');
+Route::get('/people/{id}', function ($id) {
+    //echo "********* $id ******";
+    return Inertia::render('people', [
+        'personId' => $id
+    ]);
+})->name('people');
