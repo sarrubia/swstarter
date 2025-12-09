@@ -30,12 +30,15 @@ button {
     border-radius: 50px !important;
 }
 
-button.btn-swstarter {
+.btn-swstarter {
+    border-radius: 50px !important;
     background-color: rgb(0, 169, 94) !important;
     color: #ffffff !important;
+    font-weight: bold !important;
 }
 
-button.btn-swstarter:hover {
+.btn-swstarter:hover {
+    border-radius: 50px !important;
     background-color: rgba(0, 169, 94, 0.8) !important;
 }
 
@@ -90,4 +93,42 @@ button.btn-swstarter:hover {
 .search-container .search-results .search-results-item {
     height: 60px;
     border-bottom: 1px solid #718096;
+}
+
+
+.search-results-details-title h2 {
+    font-weight: bold;
+    text-align: left;
+    font-size: 16pt;
+    margin-bottom: 20px;
+}
+
+.search-results-details {
+    text-align: left;
+}
+
+.search-results-details h2 {
+    text-align: left;
+    font-size: 14pt;
+    font-weight: bold;
+    border-bottom: 1px solid #c8c8c8;
+}
+
+.search-results-details-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-results-details-body-last-row {
+    margin-top: auto;
+    text-align: left;
+}
+
+
+.search-results-details ul {
+    padding-left: 0 !important;
+}
+
+.person-details-films {
+    text-align: left;
 }

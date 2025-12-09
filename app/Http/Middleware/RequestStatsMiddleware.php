@@ -27,6 +27,9 @@ class RequestStatsMiddleware
         // writing metric in database
         $metrics = new Metrics();
         $metrics->name = "request_timing";
+        $metrics->uri = (empty($request->uri()->query()->value()))
+            ? $request->uri()->path()
+            : $request->uri()->path() . '?' . $request->uri()->query()->value();
         $metrics->value = $milliseconds;
         $metrics->save();
 

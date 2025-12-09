@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 export default function SearchBox({ onClick, isLoading }) {
+    const [emptyImputValue, setEmptyImputValue] = useState(true);
     const [inputValue, setInputValue] = useState('');
     const [radioValue, setRadioValue] = useState('people'); // Set people as default value
     const handleClick = () => {
@@ -10,6 +11,15 @@ export default function SearchBox({ onClick, isLoading }) {
             console.error(e);
         }
     };
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value)
+        if(e.target.value.length > 0) {
+            setEmptyImputValue(false);
+        } else {
+            setEmptyImputValue(true);
+        }
+    }
 
     return (
         <div>
@@ -64,7 +74,7 @@ export default function SearchBox({ onClick, isLoading }) {
                                         id="searchText"
                                         placeholder="e.g. Chewbacca, Yoda, Boba Fett"
                                         value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
+                                        onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
@@ -73,7 +83,7 @@ export default function SearchBox({ onClick, isLoading }) {
                         <div className="row mb-3">
                             <div className="col">
                                 <div className="d-grid gap-2">
-                                    <button type="button" className="btn btn-swstarter" onClick={handleClick} disabled={isLoading}>
+                                    <button type="button" className="btn btn-swstarter" onClick={handleClick} disabled={isLoading || emptyImputValue}>
                                         {isLoading ? 'SEARCHING...' : 'SEARCH'}
                                     </button>
                                 </div>

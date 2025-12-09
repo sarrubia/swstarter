@@ -21,24 +21,15 @@ function isFilm(item: Film | Person): item is Film {
 }
 
 export default function SearchResultsItem({ item }: SearchProps) {
-    function onClick(item: Film | Person) {
-        const msg = `Screen not implemented.\nThe clicked object is: ${JSON.stringify(item)}`;
-        alert(msg);
-    }
-
     return (
         <div className="row align-items-center search-results-item" key={item.uid}>
             <div className="col-8">
                 <h3 className="search-results-item-title">{isFilm(item) ? item.title : item.name}</h3>
             </div>
             <div className="col-4">
-                <button type="button" className="btn btn-success" onClick={() => onClick(item)}>
-                    SEE DETAILS
-                </button>
-
                 {/*This one implements the Link to navigate to the people description screen*/}
-                <Link type="button" href={`/${isFilm(item) ? 'films' : 'people'}/${item.uid}`} className="btn btn-success" >
-                    SEE DETAILS Link
+                <Link type="button" href={`/${isFilm(item) ? 'films' : 'people'}/${item.uid}`} className="btn btn-success btn-swstarter" >
+                    SEE DETAILS
                 </Link>
             </div>
         </div>

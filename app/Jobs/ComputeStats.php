@@ -31,19 +31,46 @@ class ComputeStats implements ShouldQueue
     public function handle(): void
     {
         Log::info("Running computed stats");
+        $this->calculateRequestTimingAverage();
+        $this->calculateTop5RequestTiming();
+    }
+
+    private function calculateRequestTimingAverage() {
         Metrics::query()
             ->select(DB::raw('name, AVG(value) as average'))
             ->groupBy('name')
             ->get() // getting all logged metrics and its average
             ->each(function ($metric) { // foreach calculated metric save it in the compute_stats table
                 $statName = $metric->name . "_average";
-                $record = ComputedStats::find($statName);
+                $record = ComputedStats::query()->select()->where(['name'=>$statName])->get()->first();
+                Log::info("RECORD; ".$record);
                 if ($record === null) { // creates if not exists
                     $record = new ComputedStats();
-                    $record->name = $metric->name . "_average";
+                    $record->name = $statName;
                 }
                 $record->value = $metric->average;
                 $record->save();
             });
     }
+
+    private function calculateTop5RequestTiming() {
+        $metrics = Metrics::query()
+            ->select(DB::raw('name, uri, MIN(value) as min'))
+            ->groupBy('uri')
+            ->orderBy('min', 'asc')
+            ->limit(5)
+            ->get()->each(function ($metric) {
+                $record = ComputedStats::query()->select()->where(['uri'=>$metric->uri])->get()->first();
+
+                if ($record === null) { // creates if not exists
+                    $record = new ComputedStats();
+                }
+
+                $record->name = $metric->name . "_min";
+                $record->uri = $metric->uri;
+                $record->value = $metric->min;
+                $record->save();
+            });
+    }
+
 }

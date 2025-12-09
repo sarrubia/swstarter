@@ -9,8 +9,15 @@ Route::get('/', function () {
 
 // route to people screen details
 Route::get('/people/{id}', function ($id) {
-    //echo "********* $id ******";
     return Inertia::render('people', [
         'personId' => $id
     ]);
 })->name('people');
+
+
+// route to movie screen details
+Route::get('/films/{id}', function ($id) {
+    return Inertia::render('films', [
+        'filmId' => $id
+    ]);
+})->name('films');

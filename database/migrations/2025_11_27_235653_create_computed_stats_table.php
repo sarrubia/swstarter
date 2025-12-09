@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('computed_stats', function (Blueprint $table) {
-            $table->string('name')->primary();
+            $table->id();
+            $table->string('name');
+            $table->string('uri');
             $table->bigInteger('value');
             $table->timestamps();
         });

@@ -31,10 +31,22 @@ class StatsController extends Controller
      * @return JsonResponse the format output is [{"metric_name":"some_metric_name","metric_value":"some-metric_value"}]
      */
     public function get(Request $request): JsonResponse {
-        $data = [];
-        foreach ($this->statsService->getCalculatedStats() as $metricName => $metricValue) {
-            $data[] = MetricDto::make($metricName, $metricValue)->toArray();
+
+        $requestTimingAverage = [];
+        foreach ($this->statsService->getOverallRequestTiming() as $item) {
+            $requestTimingAverage[] = MetricDto::fromArray($item)->toArray();
         }
+
+        $requestTimingTop5 = [];
+        foreach ($this->statsService->getTop5RequestTiming() as $item) {
+            $requestTimingTop5[] = MetricDto::fromArray($item)->toArray();
+        }
+
+        $data[] = [
+            'average' => $requestTimingAverage,
+            'top5' => $requestTimingTop5,
+        ];
+
         return response()->json($data, JsonResponse::HTTP_OK);
     }
 }

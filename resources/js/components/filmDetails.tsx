@@ -1,24 +1,24 @@
 import { Link } from '@inertiajs/react';
-import { Person, PersonFilms } from '@/services/people';
+import { Film, FilmCharacters } from '@/services/films';
 import { backendLink2frontendLink } from '@/lib/utils';
 
-interface PersonDetails {
-    details: Person;
+interface FilmDetails {
+    details: Film;
 }
 
-type PersonDetailsProps = PersonDetails
+type FilmDetailsProps = FilmDetails
 
 
-interface PersonFilmsProps {
-    films: PersonFilms[];
+interface FilmCharactersProps {
+    characters: FilmCharacters[];
 }
 
-type PersonFilmsPropsType = PersonFilmsProps;
-export function PersonDetails({ details } : PersonDetailsProps) {
+type FilmCharactersPropsType = FilmCharactersProps;
+export function FilmDetails({ details } : FilmDetailsProps) {
 
-    function FilmsLink({films}: PersonFilmsPropsType) {
+    function CharactersLink({characters}: FilmCharactersPropsType) {
 
-        if (!films) {
+        if (!characters) {
             return (
                 <div></div>
             );
@@ -26,10 +26,10 @@ export function PersonDetails({ details } : PersonDetailsProps) {
 
         return (
             <div className="person-details-films">
-                {films.map((film: PersonFilms, index: number, original: PersonFilms[]) => {
+                {characters.map((character: FilmCharacters, index: number, original: FilmCharacters[]) => {
                     const isLastItem = index === original.length - 1;
                     return (
-                        <span><a href={backendLink2frontendLink(film.link)} key={film.uid}>{film.title}</a>{!isLastItem && <span>, </span>}</span>
+                        <span><a href={backendLink2frontendLink(character.link)} key={character.uid}>{character.name}</a>{!isLastItem && <span>, </span>}</span>
                     )
                 })}
             </div>
@@ -46,26 +46,19 @@ export function PersonDetails({ details } : PersonDetailsProps) {
                     <div className="col-12">
                         <div className="row search-results-details-title">
                             <div className="col-12">
-                                <h2>{details.name}</h2>
+                                <h2>{details.title}</h2>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-5 search-results-details">
-                                <h2>Details</h2>
-                                <ul>
-                                    <li>Birth Year: {details.birth_year}</li>
-                                    <li>Eye Color: {details.eye_color}</li>
-                                    <li>Gender: {details.gender}</li>
-                                    <li>Hair Color: {details.hair_color}</li>
-                                    <li>Height: {details.height}</li>
-                                    <li>Mass: {details.mass}</li>
-                                    <li>Skin Color: {details.skin_color}</li>
-                                </ul>
+                                <h2>Opening Crawl</h2>
+                                <p>{details.opening_crawl}
+                                </p>
                             </div>
                             <div className="col-2"></div>
                             <div className="col-5 search-results-details">
-                                <h2>Movies</h2>
-                                {details.films && <FilmsLink films={details.films} />}
+                                <h2>Characters</h2>
+                                {details.characters && <CharactersLink characters={details.characters} />}
                             </div>
                         </div>
                     </div>

@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Cache;
 
 class PeopleController extends Controller
 {
@@ -67,9 +68,8 @@ class PeopleController extends Controller
         }
 
         try {
-
-            $result = $this->swApiService->getPersonById($id); // fetching person from StarWars API service
-            $personDto = PersonDto::fromArray($result); // making the PersonDto to be sent as response
+            $person = $this->swApiService->getPersonByIdWithDecoration($id); // fetching person from StarWars API service
+            $personDto = PersonDto::fromArray($person); // making the PersonDto to be sent as response
             return response()->json($personDto->toArray(), Response::HTTP_OK);
 
         } catch (\Exception $exception) { // error handling

@@ -72,7 +72,7 @@ class FilmsController extends Controller
 
         try {
 
-            $result = $this->swApiService->getFilmById($id); // fetching film from StarWars API service
+            $result = $this->swApiService->getFilmByIdWithDecoration($id); // fetching film from StarWars API service
             $filmsDto = FilmDto::fromArray($result); // making the FilmDto to be sent as response
             return response()->json($filmsDto->toArray(), Response::HTTP_OK);
 

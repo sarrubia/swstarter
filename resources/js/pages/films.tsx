@@ -1,17 +1,18 @@
 import Layout from '@/components/layout';
 import { PersonDetails } from '@/components/personDetails';
-import { PeopleService, Person } from '@/services/people';
 import { useState, useEffect, useRef } from 'react';
+import { Film, FilmsService } from '@/services/films';
+import { FilmDetails } from '@/components/filmDetails';
 
-export default function PeopleDetails({personId}){
+export default function FilmsDetails({filmId}){
     const initialized = useRef(false);
 
     const [data, setData] = useState({});
-    const peopleService: PeopleService = new PeopleService();
+    const filmsService: FilmsService = new FilmsService();
     const fetchData = async (): Promise<void> => {
-        const person: Promise<Person> = peopleService.getPeopleById(personId);
-        person.then(p => {
-            setData(p);
+        const film: Promise<Film> = filmsService.getFilmById(filmId);
+        film.then(f => {
+            setData(f);
         }).catch(error => console.log(error));
     }
 
@@ -28,7 +29,7 @@ export default function PeopleDetails({personId}){
                 <div className="row align-items-start">
                     <div className="col-2"></div>
                     <div className="col-8">
-                        <PersonDetails details={data} />
+                        <FilmDetails details={data} />
                     </div>
                     <div className="col-2"></div>
                 </div>

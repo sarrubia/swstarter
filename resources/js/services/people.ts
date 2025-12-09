@@ -1,7 +1,12 @@
 import App from '@/actions/App';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { getById } from '@/actions/App/Http/Controllers/PeopleController';
+
+export interface PersonFilms {
+    uid: string;
+    title: string;
+    link: string;
+}
 
 export interface Person {
     uid: string;
@@ -13,6 +18,7 @@ export interface Person {
     eye_color: string;
     mass: string;
     birth_year: string;
+    films: PersonFilms[];
 }
 export class PeopleService {
     private api: AxiosInstance;
@@ -37,6 +43,7 @@ export class PeopleService {
     }
 
     public async getPeopleById(id: string): Promise<Person> {
+        console.log('URL', this.api.get(App.Http.Controllers.PeopleController.getById(id).url));
         try {
             const response: AxiosResponse<Person> = await this.api.get(App.Http.Controllers.PeopleController.getById(id).url);
             return response.data;

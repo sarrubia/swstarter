@@ -3,7 +3,10 @@
 namespace App\Services\SwApi;
 
 use App\Lib\Utils\ArrayUtils;
+use App\Services\SwApi\Decorators\FilmDecorator;
+use App\Services\SwApi\Decorators\PersonDecorator;
 use App\Services\SwApi\Exceptions\SwApiRequestException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -15,9 +18,12 @@ class SwApiService
     const SWAPI_ROOT_ENDPOINT = 'https://www.swapi.tech';
     const SWAPI_ENDPOINT = self::SWAPI_ROOT_ENDPOINT . '/api/';
 
-
     const SWAPI_RESOURCE_PEOPLE = 'people';
     const SWAPI_RESOURCE_FILMS = 'films';
+
+    const CACHE_TTL_MINUTES = 50;
+    const CACHE_PREFIX_PEOPLE = 'people';
+    const CACHE_PREFIX_FILMS = 'films';
 
     public function __construct() {}
 
@@ -37,19 +43,7 @@ class SwApiService
      * @throws \App\Services\SwApi\Exceptions\SwApiRequestException
      */
     public function getFilms(string $title): array {
-        $response = Http::withUrlParameters([
-            'endpoint' => self::SWAPI_ENDPOINT,
-            'resource' => self::SWAPI_RESOURCE_FILMS,
-        ])->get('{+endpoint}/{resource}', ['title' => $title]);
-
-        if ($response->failed()) {
-            Log::error('error fetching info from swapi.tech. statusCode={status} body={body}',
-                ['status' => $response->getStatusCode(), 'body' => $response->getBody()]);
-
-            throw new SwApiRequestException('error fetching info from swapi.tech');
-        }
-
-        return $this->fetchItems($response->json('result', []));
+        return $this->getResourceItemsFilteredBy(self::SWAPI_RESOURCE_FILMS,'title', $title);
     }
 
     /**
@@ -62,20 +56,23 @@ class SwApiService
      * @throws \App\Services\SwApi\Exceptions\SwApiRequestException
      */
     public function getFilmById(string $id): array {
-        $response = Http::withUrlParameters([
-            'endpoint' => self::SWAPI_ENDPOINT,
-            'resource' => self::SWAPI_RESOURCE_FILMS,
-            'id' => $id,
-        ])->get('{+endpoint}/{resource}/{id}');
+        return $this->getResourceById(self::SWAPI_RESOURCE_FILMS, $id, self::CACHE_PREFIX_FILMS);
+    }
 
-        if ($response->failed()) {
-            Log::error('error fetching film by id from swapi.tech. id={} statusCode={status} body={body}',
-                ['id' => $id, 'status' => $response->getStatusCode(), 'body' => $response->getBody()]);
+    public function getFilmByIdWithDecoration(string $id): array {
+        return $this->decorateFilm($this->getFilmById($id));
+    }
 
-            throw new SwApiRequestException('error fetching film by id from swapi.tech');
+    private function decorateFilm(array $films): array {
+        $decoratedCharacterLinks = [];
+        foreach ($films["characters"] as $peopleUrl) {
+            $personId = $this->getIdFromUrl($peopleUrl, '/api/people/');
+            $person = $this->getPersonById($personId);
+            $decoratedCharacterLinks[] = PersonDecorator::getLink($person);
         }
 
-        return ['uid' => $id, ...$this->cleanupProperties($response->json('result.properties', []))];
+        $films['characters'] = $decoratedCharacterLinks;
+        return $films;
     }
 
     /**
@@ -86,19 +83,7 @@ class SwApiService
      * @throws \Illuminate\Http\Client\ConnectionException
      */
     public function getPeople(string $name): array {
-        $response = Http::withUrlParameters([
-            'endpoint' => self::SWAPI_ENDPOINT,
-            'resource' => self::SWAPI_RESOURCE_PEOPLE,
-        ])->get('{+endpoint}/{resource}', ['name' => $name]);
-
-        if ($response->failed()) {
-            Log::error('error fetching info from swapi.tech. statusCode={status} body={body}',
-                ['status' => $response->getStatusCode(), 'body' => $response->getBody()]);
-
-            throw new SwApiRequestException('error fetching info from swapi.tech');
-        }
-
-        return $this->fetchItems($response->json('result', []));
+        return $this->getResourceItemsFilteredBy(self::SWAPI_RESOURCE_PEOPLE,'name', $name);
     }
 
     /**
@@ -109,21 +94,28 @@ class SwApiService
      * @throws \Illuminate\Http\Client\ConnectionException
      */
     public function getPersonById(string $id): array {
-        $response = Http::withUrlParameters([
-            'endpoint' => self::SWAPI_ENDPOINT,
-            'resource' => self::SWAPI_RESOURCE_PEOPLE,
-            'id' => $id,
-        ])->get('{+endpoint}/{resource}/{id}');
+        return $this->getResourceById(
+            self::SWAPI_RESOURCE_PEOPLE,
+            $id,
+            self::CACHE_PREFIX_PEOPLE);
+    }
 
-        if ($response->failed()) {
-            Log::error('error fetching person by id from swapi.tech. id={} statusCode={status} body={body}',
-                ['id' => $id, 'status' => $response->getStatusCode(), 'body' => $response->getBody()]);
+    public function getPersonByIdWithDecoration(string $id): array {
+        return $this->decoratePerson($this->getPersonById($id));
+    }
 
-            throw new SwApiRequestException('error fetching person by id from swapi.tech');
+    private function decoratePerson(array $person): array {
+        $detailedFilm = [];
+        foreach ($person["films"] as $filmUrl) {
+            $filmId = $this->getIdFromUrl($filmUrl, '/api/films/');
+            $film = $this->getFilmById($filmId);
+            $detailedFilm[] = FilmDecorator::getFilmLink($film);
         }
 
-        return ['uid' => $id, ...$this->cleanupProperties($response->json('result.properties', []))];
+        $person['films'] = $detailedFilm;
+        return $person;
     }
+
 
     /**
      * Common function to parse API response and return a curated item list
@@ -154,11 +146,60 @@ class SwApiService
         return $properties;
     }
 
+    private function getIdFromUrl(string $url, string $prefix): string {
+        return str_replace($prefix, '', $url);
+    }
+
     private function removeSWEndpointFromList(array $list): array {
         $curatedList = [];
         foreach ($list as $item) {
            $curatedList[] = str_replace(self::SWAPI_ROOT_ENDPOINT, '', $item );
         }
         return $curatedList;
+    }
+
+    private function cacheKey(string $prefix, string $key): string {
+        return $prefix . '_' . $key;
+    }
+
+    private function getResourceItemsFilteredBy(string $resource, string $filterKey, string $filterValue): array {
+        $response = Http::withUrlParameters([
+            'endpoint' => self::SWAPI_ENDPOINT,
+            'resource' => $resource,
+        ])->get('{+endpoint}/{resource}', [$filterKey => $filterValue]);
+
+        if ($response->failed()) {
+            Log::error('error fetching info from swapi.tech. statusCode={status} body={body}',
+                ['status' => $response->getStatusCode(), 'body' => $response->getBody()]);
+
+            throw new SwApiRequestException('error fetching info from swapi.tech');
+        }
+
+        return $this->fetchItems($response->json('result', []));
+    }
+
+    private function getResourceById(string $resource, string $id, string $cachePrefix, ): array {
+
+        if (Cache::has($this->cacheKey($cachePrefix, $id))) {
+            return Cache::get($this->cacheKey($cachePrefix, $id));
+        }
+
+        $response = Http::withUrlParameters([
+            'endpoint' => self::SWAPI_ENDPOINT,
+            'resource' => $resource,
+            'id' => $id,
+        ])->get('{+endpoint}/{resource}/{id}');
+        if ($response->failed()) {
+            Log::error('error fetching {resource} by id from swapi.tech. id={id} statusCode={status} body={body}',
+                ['resource' => $resource, 'id' => $id, 'status' => $response->getStatusCode(), 'body' => $response->getBody()]);
+
+            throw new SwApiRequestException('error fetching resource by id from swapi.tech');
+        }
+
+        $toReturn = ['uid' => $id, ...$this->cleanupProperties($response->json('result.properties', []))];
+
+        Cache::add($this->cacheKey($cachePrefix, $id), $toReturn, now()->addMinutes(self::CACHE_TTL_MINUTES));
+
+        return $toReturn;
     }
 }
