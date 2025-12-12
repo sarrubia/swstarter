@@ -4,16 +4,7 @@
 
 ### Having Docker installed
 
-Building the Docker image:
-```shell
-docker build -t lawnstarter/swstarter:latest .
-```
-
-Running a container based on built image:
-```shell
-docker run -d -p 8000:8000 --name swstarter-web lawnstarter/swstarter:latest
-```
-Or with Docker Compose
+Run it with Docker Compose
 
 ```shell
 docker-compose up --build
@@ -25,24 +16,24 @@ docker-compose up --build
 
 Fetch Star Wars movies by title
 ```shell
-curl --location 'http://localhost:8000/api/films?title=hope'
+curl --location 'http://localhost/api/films?title=hope'
 ```
 
 Fetch Star Wars movie by id:
 ```shell
-curl --location 'http://localhost:8000/api/films/1'
+curl --location 'http://localhost/api/films/1'
 ```
 
 ### People endpoints
 
 Fetch Star Wars people by name
 ```shell
-curl --location 'http://localhost:8000/api/people?name=yoda'
+curl --location 'http://localhost/api/people?name=yoda'
 ```
 
 Fetch Star Wars people by id:
 ```shell
-curl --location 'http://localhost:8000/api/people/22'
+curl --location 'http://localhost/api/people/22'
 ```
 
 
@@ -50,16 +41,17 @@ curl --location 'http://localhost:8000/api/people/22'
 
 Once that the service is up and running the stats endpoint can be called following the next curl command:
 ```shell
-curl --location 'http://localhost:8000/api/stats'
+curl --location 'http://localhost/api/stats'
 ```
 
 ## To have into account
 
- - **Database:** is the default Laravel SQLite installed at starter-kit initialization.
+ - **Database:** is a MySQL database (see docker-compose.yaml)
 
- - **Queue:** is the default configuration, that means jobs are scheduled to run in DB. 
-   - A Redis instance could be a better option for production environments 
-
+ - **Queue:** is the default redis configuration, that means jobs are scheduled to run in Redis DB 0.
+ 
  - **Cron** the Laravel scheduler has been added as cronjob. See the folder `.docker/cron`
+ - **Cache:** due to SWAPI has Swapi now has rate slowing on top of the rate limiting and is currently set to slow by 100ms starting after the 5th API request within a 15 minute window. 
+A Redis cache has been added to get a better user experience. 
 
 
