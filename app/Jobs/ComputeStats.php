@@ -48,6 +48,7 @@ class ComputeStats implements ShouldQueue
                     $record = new ComputedStats();
                     $record->name = $statName;
                 }
+                $record->uri = "/*";
                 $record->value = $metric->average;
                 $record->save();
             });
@@ -56,7 +57,7 @@ class ComputeStats implements ShouldQueue
     private function calculateTop5RequestTiming() {
         $metrics = Metrics::query()
             ->select(DB::raw('name, uri, MIN(value) as min'))
-            ->groupBy('uri')
+            ->groupBy('uri', 'name')
             ->orderBy('min', 'asc')
             ->limit(5)
             ->get()->each(function ($metric) {

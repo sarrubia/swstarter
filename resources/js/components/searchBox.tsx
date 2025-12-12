@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from 'react';
 export default function SearchBox({ onClick, isLoading }) {
     const [emptyImputValue, setEmptyImputValue] = useState(true);
     const [inputValue, setInputValue] = useState('');
+    const [inputPlaceholderValue, setInputPlaceholderValue] = useState('e.g. Chewbacca, Yoda, Boba Fett');
     const [radioValue, setRadioValue] = useState('people'); // Set people as default value
     const handleClick = () => {
         try {
@@ -18,6 +19,15 @@ export default function SearchBox({ onClick, isLoading }) {
             setEmptyImputValue(false);
         } else {
             setEmptyImputValue(true);
+        }
+    }
+
+    const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setRadioValue(e.target.value)
+        if(e.target.value === 'people') {
+            setInputPlaceholderValue('e.g. Chewbacca, Yoda, Boba Fett');
+        } else {
+            setInputPlaceholderValue('e.g. A New Hope, The Empire Strikes Back');
         }
     }
 
@@ -42,7 +52,7 @@ export default function SearchBox({ onClick, isLoading }) {
                                         id="radioPeople"
                                         value="people"
                                         checked={radioValue === 'people'}
-                                        onChange={(e) => setRadioValue(e.target.value)}
+                                        onChange={handleRadioChange}
                                     />
                                     <label className="form-check-label" htmlFor="radioPeople">
                                         People
@@ -56,7 +66,7 @@ export default function SearchBox({ onClick, isLoading }) {
                                         id="radioFilms"
                                         value="films"
                                         checked={radioValue === 'films'}
-                                        onChange={(e) => setRadioValue(e.target.value)}
+                                        onChange={handleRadioChange}
                                     />
                                     <label className="form-check-label" htmlFor="radioFilms">
                                         Movies
@@ -72,7 +82,7 @@ export default function SearchBox({ onClick, isLoading }) {
                                         type="text"
                                         className="form-control"
                                         id="searchText"
-                                        placeholder="e.g. Chewbacca, Yoda, Boba Fett"
+                                        placeholder={inputPlaceholderValue}
                                         value={inputValue}
                                         onChange={handleInputChange}
                                     />

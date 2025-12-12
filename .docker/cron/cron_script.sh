@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd /app
+cd /var/www/html
 /usr/local/bin/php artisan schedule:run

@@ -33,7 +33,7 @@ class StatsService
         $top5RequestTiming = ComputedStats::query()
             ->select()
             ->where(['name' => 'request_timing_min'])
-            ->orderBy('value', 'asc')
+            ->orderBy('value', 'desc')
             ->limit(5)
             ->get();
 
