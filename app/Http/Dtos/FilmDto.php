@@ -110,7 +110,7 @@ class FilmDto extends AbstractDto
         $director = ArrayUtils::keyExists(self::FIELD_DIRECTOR, $data, self::UNKNOWN );
         $releaseDate = ArrayUtils::keyExists(self::FIELD_RELEASE_DATE, $data, self::UNKNOWN );
         $openingCrawl = ArrayUtils::keyExists(self::FIELD_OPENING_CRAWL, $data, self::UNKNOWN );
-        $characters = ArrayUtils::keyExists(self::FIELD_CHARACTERS, $data, self::UNKNOWN );
+        $characters = ArrayUtils::keyExists(self::FIELD_CHARACTERS, $data, [] );
 
         return self::make(
             $uid,

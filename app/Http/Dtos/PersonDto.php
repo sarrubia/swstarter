@@ -129,7 +129,7 @@ class PersonDto extends AbstractDto
         $eyeColor = ArrayUtils::keyExists(self::FIELD_EYE_COLOR, $data, self::UNKNOWN );
         $mass = ArrayUtils::keyExists(self::FIELD_MASS, $data, self::UNKNOWN );
         $birthYear = ArrayUtils::keyExists(self::FIELD_BIRTH_YEAR, $data, self::UNKNOWN );
-        $films = ArrayUtils::keyExists(self::FIELD_FILMS, $data, self::UNKNOWN );
+        $films = ArrayUtils::keyExists(self::FIELD_FILMS, $data, [] );
 
         return self::make(
             $uid,

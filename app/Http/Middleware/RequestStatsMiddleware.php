@@ -18,20 +18,21 @@ class RequestStatsMiddleware
     {
         // getting the time now before calling the controller
         $startTime = microtime(true);
-        $resp = $next($request); // calling next middleware
+        
+        try {
+            $resp = $next($request); // calling next middleware
+        } finally {
+            // calculating the elapsed time after controller returns the response
+            $endTime = microtime(true) - $startTime;
+            $milliseconds = intval($endTime * 1000);
 
-        // calculating the elapsed time after controller returns the response
-        $endTime = microtime(true) - $startTime;
-        $milliseconds = intval($endTime * 1000);
-
-        // writing metric in database
-        $metrics = new Metrics();
-        $metrics->name = "request_timing";
-        $metrics->uri = (empty($request->uri()->query()->value()))
-            ? $request->uri()->path()
-            : $request->uri()->path() . '?' . $request->uri()->query()->value();
-        $metrics->value = $milliseconds;
-        $metrics->save();
+            // writing metric in database
+            $metrics = new Metrics();
+            $metrics->name = "request_timing";
+            $metrics->uri = $request->getRequestUri();
+            $metrics->value = $milliseconds;
+            $metrics->save();
+        }
 
         // returning response to continue the request life cycle
         return $resp;
